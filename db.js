@@ -21,7 +21,13 @@ var mongoCFUri = cfenv.getAppEnv().getServiceURL('goof-mongo');
 console.log(JSON.stringify(cfenv.getAppEnv()));
 
 // Default Mongo URI is local
-var mongoUri = 'mongodb://localhost/express-todo';
+const DOCKER = process.env.DOCKER
+if ( DOCKER === '1') {
+  var mongoUri = 'mongodb://goof-mongo/express-todo';
+} else {
+  var mongoUri = 'mongodb://localhost/express-todo';
+}
+
 
 // CloudFoundry Mongo URI
 if (mongoCFUri) {
@@ -29,7 +35,11 @@ if (mongoCFUri) {
 } else if (process.env.MONGOLAB_URI) {
   // Generic (plus Heroku) env var support
   mongoUri = process.env.MONGOLAB_URI;
+} else if (process.env.MONGODB_URI) {
+  // Generic (plus Heroku) env var support
+  mongoUri = process.env.MONGODB_URI;
 }
+
 console.log("Using Mongo URI " + mongoUri);
 
 mongoose.connect(mongoUri);
